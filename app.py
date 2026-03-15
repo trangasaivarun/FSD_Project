@@ -848,6 +848,24 @@ def profile():
     return render_template('user_profile.html', user=user,
                            quiz_count=quiz_count, avg_pct=avg_pct)
 
+# ================================================================
+#   DELETE ACCOUNT
+# ================================================================
+@app.route('/delete_account', methods=['POST'])
+@login_required
+def delete_account():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    user_id = session.get('user_id')
+    
+    # Delete the user; cascade delete will handle related records in child tables
+    cursor.execute('DELETE FROM users WHERE id=%s', (user_id,))
+    mysql.connection.commit()
+    
+    # Clear the session
+    session.clear()
+    flash('Your account has been successfully deleted.', 'success')
+    return redirect(url_for('landing'))
+
 
 # ================================================================
 #   QUIZ REVIEW MODE  – view any past attempt's full answer breakdown
