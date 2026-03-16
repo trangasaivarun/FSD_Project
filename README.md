@@ -78,17 +78,6 @@ QuizMaster/
     └── ...                 # Other template files
 ```
 
-## Deploying to Render
-Render is an excellent platform for hosting this Flask application. Follow these best practices to deploy successfully:
-
-1. **Database Hosting**: Create a managed MySQL database (Render does not support managed MySQL directly, so you can use a service like Aiven, PlanetScale, or Railway for the database) and get the connection URL.
-2. **Update Database URI**: In `app.py`, it's best to use environment variables for database credentials so they aren't hardcoded in GitHub. (e.g., `os.environ.get('MYSQL_HOST')`).
-3. **Web Service Setup**: 
-   - Create a new **Web Service** on Render and connect your GitHub repository.
-   - Set the **Build Command** to: `pip install -r requirements.txt`
-   - Set the **Start Command** to: `gunicorn app:app` (This uses the production application server included in the requirements).
-4. **Environment Variables**: Add your database credentials and secret keys to the Render Environment Variables tab.
-
 ## Contributing
 Contributions are welcome! If you would like to improve QuizMaster, please follow these steps:
 1. Fork the repository.
