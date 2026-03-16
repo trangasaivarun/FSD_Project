@@ -1,9 +1,8 @@
 import pymysql
 pymysql.install_as_MySQLdb()
-
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
-from flask_mysqldb import MySQL
 import MySQLdb.cursors
+
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, g
 import hashlib   # used for password hashing (discussed in class)
 import re        # used for email/phone validation
 import random    # used for OTP generation
@@ -28,6 +27,38 @@ app.secret_key = 'quizmaster_secret_key'
 # MySQL Configuration
 # Change host/user/password to match your local MySQL setup
 # ----------------------------------------------------------------
+# Custom MySQL wrapper to mimic flask_mysqldb but using pure PyMySQL (Vercel compatible)
+class MySQL:
+    def __init__(self, app=None):
+        self.app = app
+        if app is not None:
+            self.init_app(app)
+
+    def init_app(self, app):
+        app.teardown_appcontext(self.teardown)
+
+    def connect(self):
+        return pymysql.connect(
+            host=self.app.config.get('MYSQL_HOST', 'localhost'),
+            user=self.app.config.get('MYSQL_USER', 'root'),
+            password=self.app.config.get('MYSQL_PASSWORD', ''),
+            database=self.app.config.get('MYSQL_DB', 'quizmaster'),
+            port=self.app.config.get('MYSQL_PORT', 3306),
+            autocommit=True,
+            ssl={'ssl_mode': 'PREFER'}
+        )
+
+    @property
+    def connection(self):
+        if 'mysql_db' not in g:
+            g.mysql_db = self.connect()
+        return g.mysql_db
+
+    def teardown(self, exception):
+        db = g.pop('mysql_db', None)
+        if db is not None:
+            db.close()
+
 app.config['MYSQL_HOST']     = os.environ.get('MYSQL_HOST', 'localhost')
 app.config['MYSQL_USER']     = os.environ.get('MYSQL_USER', 'root')
 app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', 'Varun23141')
@@ -36,6 +67,7 @@ app.config['MYSQL_PORT']     = int(os.environ.get('MYSQL_PORT', 3306))
 app.config['MYSQL_CUSTOM_OPTIONS'] = {'ssl_mode': 'REQUIRED'}
 
 mysql = MySQL(app)
+
 
 # ----------------------------------------------------------------
 # Email Configuration (Gmail SMTP)
