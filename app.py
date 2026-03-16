@@ -6,11 +6,15 @@ import re        # used for email/phone validation
 import random    # used for OTP generation
 import smtplib   # used for sending OTP email (Python standard library)
 import os
+from dotenv import load_dotenv
 from email.mime.text import MIMEText          # for building email body
 from email.mime.multipart import MIMEMultipart  # for building email structure
 
+load_dotenv()
+
 app = Flask(__name__)
 app.jinja_env.globals['enumerate'] = enumerate  # allow {% for i, x in enumerate(list) %} in templates
+
 
 # ----------------------------------------------------------------
 # Secret key – used by Flask to sign session cookies
@@ -26,6 +30,7 @@ app.config['MYSQL_USER']     = os.environ.get('MYSQL_USER', 'root')
 app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', 'Varun23141')
 app.config['MYSQL_DB']       = os.environ.get('MYSQL_DB', 'quizmaster')
 app.config['MYSQL_PORT']     = int(os.environ.get('MYSQL_PORT', 3306))
+app.config['MYSQL_CUSTOM_OPTIONS'] = {'ssl_mode': 'REQUIRED'}
 
 mysql = MySQL(app)
 
