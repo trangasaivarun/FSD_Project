@@ -5,6 +5,7 @@ import hashlib   # used for password hashing (discussed in class)
 import re        # used for email/phone validation
 import random    # used for OTP generation
 import smtplib   # used for sending OTP email (Python standard library)
+import os
 from email.mime.text import MIMEText          # for building email body
 from email.mime.multipart import MIMEMultipart  # for building email structure
 
@@ -18,10 +19,8 @@ app.secret_key = 'quizmaster_secret_key'
 
 # ----------------------------------------------------------------
 # MySQL Configuration
-# Uses environment variables for Render deployment, fallbacks for local dev
+# Change host/user/password to match your local MySQL setup
 # ----------------------------------------------------------------
-import os
-
 app.config['MYSQL_HOST']     = os.environ.get('MYSQL_HOST', 'localhost')
 app.config['MYSQL_USER']     = os.environ.get('MYSQL_USER', 'root')
 app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD', 'Varun23141')
