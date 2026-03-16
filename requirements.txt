@@ -1,5 +1,6 @@
 Flask
 Flask-MySQLdb
-mysqlclient
+PyMySQL
+cryptography
 Werkzeug
 python-dotenv
